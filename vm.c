@@ -32,12 +32,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const PAS[500] = 0;
-
-int PC = 499;
-int SP = 500;
+typedef struct {
+    int op; // Operand
+    int L; // Call depth 
+    int M; // Index of var in an AR
+} InstructionRegister;
 
 int main(int argc, char * argv[]) {
+
+    InstructionRegister IR;
+    int PAS[500] = 0;
+    int stack[256] = 0;
+    int PC = 499;
+    int SP = 500;
+    int BP = SP-1;
 
     // See if file is present
     if (argc < 2) {
@@ -52,11 +60,148 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), filePtr) != EOF) {
+    // char buffer[256];
+    // while (fgets(buffer, sizeof(buffer), filePtr) != EOF) {
         // Maybe use scanf instead, but i feel we should be used != EOF 
     
+    // }
+//  && getchar() != "\n"
+    printf("\tL\t M\tPC\tBP\tSP\tstack");
+    printf("\nInitial Values: \t%d\t%d\t%d", PC, BP, SP);
+
+    while(fscanf(filePtr, "%d %d %d", &IR.op, &IR.L, &IR.M) == 3 && getchar() != "\n") {
+        // printf("%d %d %d", IR.op, IR.L, IR.M);
+
+        
+        while (IR.op != "SYS") {
+
+            PAS[PC] = IR.op;
+            PAS[PC-1] = IR.L;
+            PAS[PC-2] = IR.M;
+            PC = PC - 3;
+        }
+
+        // Theres an initial JUMP to know where instruction are to begin
+        PC = PC - IR.M;
+        // Then an initial INC to place the 5 initial values on stack
+        print("%d", stack[5]);
+
+        if (IR.op == 0)
+            return -1;
+        else if (IR.op == 1) {
+            SP = SP - 1;
+            PAS[SP] = 5 // 5 will be input 
+        } else if {IR.op == 2} {
+            switch(IR.op) {
+                case 1:
+                    Return from subroutine and restore caller’s AR.
+                    sp ← bp +1
+                    bp ← pas[sp−2]
+                    pc ← pas[sp−3]
+                case 2: 
+                    Addition.
+                    pas[sp+1] ← pas[sp+1] + pas[sp]
+                    sp ← sp +1
+                case 3: 
+                    Subtraction.
+                    pas[sp+1] ← pas[sp+1] − pas[sp]
+                    sp ← sp +1
+                case 4: 
+                    Multiplication.
+                    pas[sp+1] ← pas[sp+1] ∗ pas[sp]
+                    sp ← sp +1
+                case 5: 
+                    Integer division.
+                    pas[sp+1] ← pas[sp+1] / pas[sp]
+                    sp ← sp +1
+                case 6:
+                    Equality comparison (result 0/1).
+                    pas[sp+1] ← (pas[sp+1] == pas[sp])
+                    sp ← sp +1
+                case 7:
+                    Inequality comparison (result 0/1).
+                    pas[sp+1] ← (pas[sp+1] ̸ = pas[sp])
+                    sp ← sp +1
+                case 8:
+                    Less-than comparison (result 0/1).
+                    pas[sp+1] ← (pas[sp+1] < pas[sp])
+                    sp ← sp +1
+                case 9:
+                    Less-or-equal comparison (result 0/1).
+                    pas[sp+1] ← (pas[sp+1] ≤ pas[sp])
+                    sp ← sp +1
+                case 10:
+                    Greater-than comparison (result 0/1).
+                    pas[sp+1] ← (pas[sp+1] > pas[sp])
+                    sp ← sp +1
+                case 11: 
+                    Greater-or-equal comparison (result 0/1).
+                    pas[sp+1] ← (pas[sp+1] ≥ pas[sp])
+                    sp ← sp +1
+                default:
+                    return -1;
+            
+        else if (IR.op == 3) {
+            Load value to top of stack from offset a in the AR n static levels down.
+            sp ← sp −1
+            pas[sp] ← pas[base(bp,n) −a]
+
+        }   else if (IR.op == 4) {
+            Store top of stack into offset o in the AR n static levels down.
+            pas[base(bp,n) −o] ← pas[sp]
+            sp ← sp +1
+            
+        }   else if (IR.op == 5) {
+            Call procedure at code address a; create activation record.
+            pas[sp−1] ← base(bp,n)
+            pas[sp−2] ← bp
+            pas[sp−3] ← pc
+            bp ← sp−1
+            pc ← a
+            
+        }   else if (IR.op == 6) {
+
+            Allocate n locals on the stack.
+            sp ← sp −n
+            
+        }   else if (IR.op == 7) {
+            Unconditional jump to address a.
+            pc ← a
+            
+        }   else if (IR.op == 8) {
+
+            Conditional jump: if value at top of stack is 0, jump
+            to a; pop the stack.
+            if pas[sp] = 0 then pc ← a
+            sp ← sp +1
+            
+        }   else if (IR.op == 9) {
+                switch(IR.op) {
+                    case 1: 
+                        Output integer value at top of stack; then pop.
+                        print(pas[sp])
+                        sp ← sp +1
+                    case 2:
+                        Read an integer from stdin and push it.
+                        sp ← sp −1
+                        pas[sp] ← readInt()
+                    case 3: 
+                        Halt the program.
+                        halt
+                    default:
+                        return -1;
+                }
+            
+        }
+
+
+            }
+        }
+        
     }
+
+
+    
 
     
 
