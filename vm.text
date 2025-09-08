@@ -30,7 +30,7 @@ Reading input & output:
 
 Required DOCU:
     Include required header comment in vm.c source file (Section 6.1)
-    GEt a 0 otherwise
+    Get a 0 otherwise
 
 CMD line Params:
     text file containing the P-machine program to execute.

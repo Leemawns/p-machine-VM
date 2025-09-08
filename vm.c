@@ -29,6 +29,7 @@
 
     Due Date : Friday , September 12 th , 2025
     */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,8 +45,9 @@ int main(int argc, char * argv[]) {
     int PAS[500] = 0;
     int stack[256] = 0;
     int PC = 499;
-    int SP = 500;
+    int SP = 499;
     int BP = SP-1;
+
 
     // See if file is present
     if (argc < 2) {
@@ -53,38 +55,37 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
-
+    // Opening file if it exists
     FILE * filePtr = fopen(argv[1], "r");
     if (filePtr == NULL) {
         printf("File not read");
         return 1;
     }
 
-    // char buffer[256];
-    // while (fgets(buffer, sizeof(buffer), filePtr) != EOF) {
-        // Maybe use scanf instead, but i feel we should be used != EOF 
-    
-    // }
-//  && getchar() != "\n"
     printf("\tL\t M\tPC\tBP\tSP\tstack");
     printf("\nInitial Values: \t%d\t%d\t%d", PC, BP, SP);
 
     while(fscanf(filePtr, "%d %d %d", &IR.op, &IR.L, &IR.M) == 3 && getchar() != "\n") {
         // printf("%d %d %d", IR.op, IR.L, IR.M);
 
-        
-        while (IR.op != "SYS") {
+        while (IR.op != "SYS") { // figure out correct condition
 
             PAS[PC] = IR.op;
             PAS[PC-1] = IR.L;
-            PAS[PC-2] = IR.M;
+            PAS[PC-2] = IR.M; // 45 . PC = 499
             PC = PC - 3;
         }
 
         // Theres an initial JUMP to know where instruction are to begin
         PC = PC - IR.M;
         // Then an initial INC to place the 5 initial values on stack
-        print("%d", stack[5]);
+        for (int i = 0; i < 5; i++) {
+            stack[i] = 0;
+            printf("%d", stack[i]);
+        }
+        SP = SP - 5;
+
+        printf("Please Enter an Integer :")
 
         if (IR.op == 0)
             return -1;
@@ -95,7 +96,7 @@ int main(int argc, char * argv[]) {
             switch(IR.op) {
                 case 1:
                     Return from subroutine and restore caller’s AR.
-                    sp ← bp +1
+                    sp = bp +1
                     bp ← pas[sp−2]
                     pc ← pas[sp−3]
                 case 2: 
@@ -215,10 +216,19 @@ int main(int argc, char * argv[]) {
 
 /* Find base L levels down from the current activation record */
 // int base ( int BP , int L ) {
-    // int arb = BP ; // activation record base
+    // int arb = BP ; // activation record base -> arb = 439
     // while ( L > 0) {
     // arb = pas [ arb ]; // follow static link
     // L - -;
   //  }
 //return arb ;
 // }
+
+ // char buffer[256];
+    // while (fgets(buffer, sizeof(buffer), filePtr) != EOF) {
+
+    // buffer -> \n or null
+        // Maybe use scanf instead, but i feel we should be used != EOF 
+    
+    // }
+//  && getchar() != "\n"
