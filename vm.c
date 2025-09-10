@@ -47,6 +47,7 @@ int main(int argc, char * argv[]) {
     int PC = 499;
     int SP = 499;
     int BP = SP-1;
+    int userInput = 0;
 
 
     // See if file is present
@@ -69,7 +70,6 @@ int main(int argc, char * argv[]) {
         // printf("%d %d %d", IR.op, IR.L, IR.M);
 
         while (IR.op != "SYS") { // figure out correct condition
-
             PAS[PC] = IR.op;
             PAS[PC-1] = IR.L;
             PAS[PC-2] = IR.M; // 45 . PC = 499
@@ -85,131 +85,108 @@ int main(int argc, char * argv[]) {
         }
         SP = SP - 5;
 
-        printf("Please Enter an Integer :")
+        scanf("Please Enter an Integer: ", &userInput);
 
+        // If invalid op
         if (IR.op == 0)
             return -1;
+        // If "LIT"
         else if (IR.op == 1) {
             SP = SP - 1;
-            PAS[SP] = 5 // 5 will be input 
-        } else if {IR.op == 2} {
-            switch(IR.op) {
-                case 1:
-                    Return from subroutine and restore caller’s AR.
-                    sp = bp +1
-                    bp ← pas[sp−2]
-                    pc ← pas[sp−3]
-                case 2: 
-                    Addition.
-                    pas[sp+1] ← pas[sp+1] + pas[sp]
-                    sp ← sp +1
-                case 3: 
-                    Subtraction.
-                    pas[sp+1] ← pas[sp+1] − pas[sp]
-                    sp ← sp +1
-                case 4: 
-                    Multiplication.
-                    pas[sp+1] ← pas[sp+1] ∗ pas[sp]
-                    sp ← sp +1
-                case 5: 
-                    Integer division.
-                    pas[sp+1] ← pas[sp+1] / pas[sp]
-                    sp ← sp +1
-                case 6:
-                    Equality comparison (result 0/1).
-                    pas[sp+1] ← (pas[sp+1] == pas[sp])
-                    sp ← sp +1
-                case 7:
-                    Inequality comparison (result 0/1).
-                    pas[sp+1] ← (pas[sp+1] ̸ = pas[sp])
-                    sp ← sp +1
-                case 8:
-                    Less-than comparison (result 0/1).
-                    pas[sp+1] ← (pas[sp+1] < pas[sp])
-                    sp ← sp +1
-                case 9:
-                    Less-or-equal comparison (result 0/1).
-                    pas[sp+1] ← (pas[sp+1] ≤ pas[sp])
-                    sp ← sp +1
-                case 10:
-                    Greater-than comparison (result 0/1).
-                    pas[sp+1] ← (pas[sp+1] > pas[sp])
-                    sp ← sp +1
-                case 11: 
-                    Greater-or-equal comparison (result 0/1).
-                    pas[sp+1] ← (pas[sp+1] ≥ pas[sp])
-                    sp ← sp +1
+            PAS[SP] = 5; // 5 will be input 
+            // IF "OPR"
+        } else if (IR.op == 2) {
+            switch(IR.M) {
+                case 0: //Return from subroutine and restore caller’s AR.
+                    SP = BP + 1;
+                    BP = PAS[SP - 2];
+                    PC = PAS[SP - 3];
+                    break;
+                case 1: // Addition.
+                    PAS[SP + 1] = PAS[SP + 1] + PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 2:  // //Subtraction.
+                    PAS[SP + 1] = PAS[SP + 1] - PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 3:  // Multiplication.
+                    PAS[SP + 1] = PAS[SP + 1] * PAS[SP];
+                    SP = SP + 1;
+                    break; 
+                case 4:  // Integer division.
+                    PAS[SP + 1] = PAS[SP + 1] / PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 5: // Equality comparison (result 0/1).
+                    PAS[SP + 1] = PAS[SP + 1] == PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 6: // Inequality comparison (result 0/1).
+                    PAS[SP + 1] = PAS[SP + 1] != PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 7: // Less-than comparison (result 0/1).
+                    PAS[SP + 1] = PAS[SP + 1] < PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 8: // Less-or-equal comparison (result 0/1).
+                    PAS[SP + 1] = PAS[SP + 1] <= PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 9: // Greater-than comparison (result 0/1).
+                    PAS[SP + 1] = PAS[SP + 1] > PAS[SP];
+                    SP = SP + 1;
+                    break;
+                case 10:  // Greater-or-equal comparison (result 0/1).
+                    PAS[SP + 1] = PAS[SP + 1] >= PAS[SP];
+                    SP = SP +1;
+                    break;
                 default:
                     return -1;
-            
-        else if (IR.op == 3) {
-            Load value to top of stack from offset a in the AR n static levels down.
-            sp ← sp −1
-            pas[sp] ← pas[base(bp,n) −a]
-
-        }   else if (IR.op == 4) {
-            Store top of stack into offset o in the AR n static levels down.
-            pas[base(bp,n) −o] ← pas[sp]
-            sp ← sp +1
-            
-        }   else if (IR.op == 5) {
-            Call procedure at code address a; create activation record.
-            pas[sp−1] ← base(bp,n)
-            pas[sp−2] ← bp
-            pas[sp−3] ← pc
-            bp ← sp−1
-            pc ← a
-            
-        }   else if (IR.op == 6) {
-
-            Allocate n locals on the stack.
-            sp ← sp −n
-            
-        }   else if (IR.op == 7) {
-            Unconditional jump to address a.
-            pc ← a
-            
-        }   else if (IR.op == 8) {
-
-            Conditional jump: if value at top of stack is 0, jump
-            to a; pop the stack.
-            if pas[sp] = 0 then pc ← a
-            sp ← sp +1
-            
-        }   else if (IR.op == 9) {
-                switch(IR.op) {
-                    case 1: 
-                        Output integer value at top of stack; then pop.
-                        print(pas[sp])
-                        sp ← sp +1
-                    case 2:
-                        Read an integer from stdin and push it.
-                        sp ← sp −1
-                        pas[sp] ← readInt()
-                    case 3: 
-                        Halt the program.
-                        halt
-                    default:
-                        return -1;
-                }
-            
-        }
-
-
             }
-        }
-        
-    }
+        } else if (IR.op == 3) { // Load value to top of stack from offset a in the AR n static levels down.
+            SP = SP = 1;
+            PAS[SP] = PAS[base(BP, IR.L) - IR.M];
 
+        }   else if (IR.op == 4) { // Store top of stack into offset o in the AR n static levels down.
+            PAS[base(BP,IR.L) - IR.M] = PAS[SP];
+            SP = SP + 1;
 
-    
+        }   else if (IR.op == 5) { // Call procedure at code address a; create activation record.
+            PAS[SP - 1] = base(BP, IR.L);
+            PAS[SP - 2] = BP;
+            PAS[SP - 3] = PC;
 
-    
+            BP = SP - 1;
+            PC = IR.M;
 
+        }   else if (IR.op == 6) {  // Allocate n locals on the stack.
+            SP = SP = IR.M;
+        }   else if (IR.op == 7) { // Unconditional jump to address a.
+            PC = IR.M;
+        }   else if (IR.op == 8) { // Conditional jump: if value at top of stack is 0, jump to a; pop the stack.
+                if (PAS[SP] = 0) {
+                    PC = IR.M;
+                    SP = SP + 1;
+            }   else if (IR.op == 9) {
+                    switch(IR.M) {
+                        case 1:  // Output integer value at top of stack; then pop.
+                            print(PAS[SP]);
+                            SP = SP +1;
+                        case 2: // Read an integer from stdin and push it.
+                            SP = SP - 1;
+                            PAS[SP] = readInt();
+                        case 3:  // Halt the program.
+                            return;
+                        default:
+                            return -1;
+                    }    
+                }
+            }
+        }   
     fclose(filePtr);
     return 0;
-    
-
 }
 
 // void print();
@@ -218,7 +195,7 @@ int main(int argc, char * argv[]) {
 // int base ( int BP , int L ) {
     // int arb = BP ; // activation record base -> arb = 439
     // while ( L > 0) {
-    // arb = pas [ arb ]; // follow static link
+    // arb = PAS [ arb ]; // follow static link
     // L - -;
   //  }
 //return arb ;
