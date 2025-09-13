@@ -34,19 +34,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CODETOP 499 // top of text segment in PAS (code stored downward)
+#define CODETOP 499
 
 typedef struct {
     int op; // Opcode
     int L;  // Call depth 
-    int M;  // Modifier (literals, offsets, sub-ops, etc.)
+    int M;  // Modifier
 } InstructionRegister;
 
-int PAS[500] = {0}; // Single memory for both code and stack
+int PAS[500] = {0};
 
-int PC = 0; // next instruction address
-int BP = 0; // base of current AR
-int SP = 0; // top of stack
+int PC = 0;
+int BP = 0;
+int SP = 0;
 
 InstructionRegister IR;
 
@@ -59,14 +59,13 @@ int main(int argc, char * argv[]) {
         printf("File not found\n");
         return 1;
     }
-    // Normal file IO
+
     FILE * filePtr = fopen(argv[1], "r");
     if (filePtr == NULL) {
         printf("File not read\n");
         return 1;
     }
 
-    // Load OP,L,M into PAS starting at index 499, then 496, etc.
     int op, l, m;
     int topIndex = 499;    // start at top of PAS array
     int lastMIndex = 499;  // track lowest index used
@@ -82,36 +81,32 @@ int main(int argc, char * argv[]) {
     }
     fclose(filePtr);
 
-    // These are the initial registers for each variable
     PC = 499;
     SP = lastMIndex;
     BP = SP - 1;
     IR.op = IR.L = IR.M = 0;
 
-    // Formatting to make it look nice
     printf("\tL \tM \tPC \tBP \tSP \tstack\n");
     printf("Initial values: \t%d \t%d \t%d\n", PC, BP, SP);
 
     int halt = 0;
 
-    // This is the start of the Fetch/Execute loop
     while (!halt) {
-        // FETCH step. Copies the OP,L,M then step PC down by 3
+        /* FETCH */
         IR.op = PAS[PC];
         IR.L  = PAS[PC - 1];
         IR.M  = PAS[PC - 2];
         PC -= 3;
 
-        // EXECUTE step. Execute based on the OP code
+        /* EXECUTE */
         switch (IR.op) {
-            case 1: // LIT. Push M (literal value) onto stack
+            case 1: // LIT
                 SP--;
                 PAS[SP] = IR.M;
                 break;
 
-            case 2: // OPR. sub operations on stack or return.
+            case 2: // OPR
                 switch (IR.M) {
-                    // These are all rather simple operations. Not much to comment.
                     case 0: // RTN
                         SP = BP + 1;
                         BP = PAS[SP - 2];
@@ -163,17 +158,17 @@ int main(int argc, char * argv[]) {
                 }
                 break;
 
-            case 3: // LOD. Push value at offset M in AR down L levels
+            case 3: // LOD
                 SP--;
                 PAS[SP] = PAS[base(BP, IR.L) - IR.M];
                 break;
 
-            case 4: // STO. Pops stack and stores top of stack to offset M in AR that is L levels down.
+            case 4: // STO
                 PAS[base(BP, IR.L) - IR.M] = PAS[SP];
                 SP++;
                 break;
 
-            case 5: // CAL. Build a new AR and jump to the code offset M
+            case 5: // CAL
                 PAS[SP - 1] = base(BP, IR.L);
                 PAS[SP - 2] = BP;
                 PAS[SP - 3] = PC;
@@ -181,22 +176,22 @@ int main(int argc, char * argv[]) {
                 PC = CODETOP - IR.M;
                 break;
 
-            case 6: // INC. Allocates an M amount of memory on the stack (downward).
+            case 6: // INC
                 SP -= IR.M;
                 break;
 
-            case 7: // JMP. Jump to code offset M
+            case 7: // JMP
                 PC = CODETOP - IR.M;
                 break;
 
-            case 8: // JPC. Pops and if top of stack is 0, jump to code offset M.
+            case 8: // JPC
                 if (PAS[SP] == 0) {
                     PC = CODETOP - IR.M;
                 }
                 SP++;
                 break;
 
-            case 9: // SYS. 1=print, 2=read, 3=halts program;
+            case 9: // SYS
                 if (IR.M == 1) {
                     printf("Output result is: %d\n", PAS[SP]);
                     SP++;
@@ -215,7 +210,7 @@ int main(int argc, char * argv[]) {
                 halt = 1;
                 break;
         }
-        // Then print trace after each instruction
+
         printState(IR.op, IR.L, IR.M, lastMIndex);
     }
 
@@ -224,7 +219,7 @@ int main(int argc, char * argv[]) {
 
 /* Find base L levels down from the current activation record */
 int base (int BP, int L) {
-    int arb = BP; // activation record base
+    int arb = BP;
     while (L > 0) {
         arb = PAS[arb]; // follow static link
         L--;
@@ -232,8 +227,7 @@ int base (int BP, int L) {
     return arb;
 }
 
-// Prints the command strings and registers, followed by the stack from high to low.
-// In callee with local variables, prints from top of stack down to the current BP, then a bar, then the control fields, then the rest of the stack down to SP.
+/* Print the machine state in required format */
 void printState(int op, int L, int M, int lastMIndex) {
 
     if (op == 2){
