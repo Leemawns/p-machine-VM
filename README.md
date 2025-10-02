@@ -24,11 +24,11 @@ gcc -O2 -std=c11 -o vm vm.c
 ```
 
 
-Usage
+## Usage
 Run the virtual machine with an input file containing P-code instructions:
 ```./vm input.txt```
 
-Example
+## Example
 ```input.txt
 -----------
 9 0 5     // LIT 0,5
@@ -38,7 +38,7 @@ Example
 0 0 0     // SIO 0,0 (HALT)
 ```
 
-Sample Inputs in the Inputs folder:
+## Sample Inputs in the Inputs folder:
 
 - Inputs/input.txt
 - Inputs/input2.txt
@@ -46,13 +46,13 @@ Sample Inputs in the Inputs folder:
 
 These files demonstrate test programs for the VM.
 
-Repository Layout (Relevant Files):
+## Repository Layout (Relevant Files):
 ```
 vm.c                  # Source code for the VM
 README.md             # Project documentation
 Inputs/               # Example input programs
 ```
-How It Works (Conceptual Overview)
+## How It Works (Conceptual Overview)
 1. Instruction Fetch – Reads the next instruction (OP, L, M).
 
 2. Instruction Decode/Execute – Performs the operation (arithmetic, jump, call, etc.).
@@ -61,10 +61,10 @@ How It Works (Conceptual Overview)
 
 4. Halting Condition – Execution stops when SIO/HALT instruction is reached.
 
-Author
+## Author
 - Eric Lemons
   University of Central Florida — Systems Software (Fall 2025)
 
-Notes
+## Notes
 - This repo contains my personal branch (main, previously Lemons) where the bulk of development occurred.
 - Original group repo had minimal progress; this fork reflects my implementation and contributions.
