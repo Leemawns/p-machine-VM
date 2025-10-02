@@ -51,6 +51,7 @@ These files demonstrate test programs for the VM.
 vm.c                  # Source code for the VM
 README.md             # Project documentation
 Inputs/               # Example input programs
+general.c             # Source code with more in-depth comments
 ```
 ## How It Works (Conceptual Overview)
 1. Instruction Fetch – Reads the next instruction (OP, L, M).
