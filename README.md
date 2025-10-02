@@ -63,6 +63,7 @@ Inputs/               # Example input programs
 
 ## Author
 - Eric Lemons
+
 University of Central Florida — Systems Software (Fall 2025)
 
 ## Notes
